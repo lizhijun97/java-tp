@@ -40,7 +40,7 @@
 
 - JVM:  JAVA Vitrual Machine
 
-  ![](../typora_image/image-20220609141657376.png)
+  ![](image/image-20220609141657376.png)
 
 ### 4.环境搭建
 
@@ -121,7 +121,7 @@ public class hellowworld {
 
 #### **关键字**
 
-![image-20220610201152019](../../typora_image/image-20220610201152019.png)
+![image-20220610201152019](image/image-20220610201152019.png)
 
 ### 2.数据类型
 
@@ -1451,7 +1451,7 @@ public class HashSet01 {
 
 ### Map
 
- **特点（jdk8）**
+####  **特点（jdk8）**
 
 1. Map 用于保存具有映射关系的数据:key-value
 2. Map中的key和value可以是任何引用类型的数据，封装于HashMap$Node对象中
@@ -1464,6 +1464,229 @@ public class HashSet01 {
 ![image-20220721153501046](../typora_image/image-20220721153501046.png)
 
 注意：
+
+![image-20220721170704424](../typora_image/image-20220721170704424.png)
+
+- 上图中entry为父类，node为子类。node->entry是向上转型，丢失了部分子方法
+- entryset存的entry对象实际是node对象，entry的k-v也分别指向对应node中的k-v，其中key为keyset类型，value是Collection类型。
+
+#### **常用方法**
+
+![image-20220721172646286](../typora_image/image-20220721172646286.png)
+
+**遍历方法**（六种）
+
+![image-20220721173312415](../typora_image/image-20220721173312415.png)
+
+1. 取出全部key，再取出对应vlaue
+
+   - 增强for
+   - 迭代器
+
+2. 把所有values取出（只有值）
+
+   - 增强for
+   - 迭代器
+
+3. 通过entrySet获取
+
+   ```java 
+   // 增强for
+   set entrySet = map.entrySet();
+   for (Object entry:entrySet){
+       // 将entry转为Map.Entry
+       // 因为entry实际指向node类型,要使用entry的getWay和getValue方法要向下转型
+       Map.Entry m = (Map.Entry) entry;
+       System.out.println(m.getKey()+"-"+ m.getValue());
+   }
+   // 迭代器
+   Iterator iterator1 = entrySet.iterator();
+   while(iterator1.hasNext()){
+       Object entry = iterator1.next();
+       Map.Entry m = (Map.Entry) entry;
+       System.out.println(m.getKey()+"-"+ m.getValue());
+   }
+   ```
+
+#### 接口实现类HashMap
+
+![image-20220721200910474](../typora_image/image-20220721200910474.png)
+
+##### 底层机制和源码
+
+![image-20220721203307938](../typora_image/image-20220721203307938.png)
+
+核心代码
+
+```java
+final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+                   boolean evict) {
+        Node<K,V>[] tab; Node<K,V> p; int n, i;
+        if ((tab = table) == null || (n = tab.length) == 0)
+            n = (tab = resize()).length;
+        if ((p = tab[i = (n - 1) & hash]) == null)
+            tab[i] = newNode(hash, key, value, null);
+        else {
+            Node<K,V> e; K k;
+            if (p.hash == hash &&
+                ((k = p.key) == key || (key != null && key.equals(k))))
+                e = p;
+            else if (p instanceof TreeNode)
+                e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
+            else {
+                for (int binCount = 0; ; ++binCount) {
+                    if ((e = p.next) == null) {
+                        p.next = newNode(hash, key, value, null);
+                        if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                            treeifyBin(tab, hash);
+                        break;
+                    }
+                    if (e.hash == hash &&
+                        ((k = e.key) == key || (key != null && key.equals(k))))
+                        break;
+                    p = e;
+                }
+            }
+            if (e != null) { // existing mapping for key
+                V oldValue = e.value;
+                if (!onlyIfAbsent || oldValue == null)
+                    e.value = value;
+                afterNodeAccess(e);
+                return oldValue;
+            }
+        }
+        ++modCount;
+        if (++size > threshold)
+            resize();
+        afterNodeInsertion(evict);
+        return null;
+    }
+// 扩容
+final Node<K,V>[] resize() {
+        Node<K,V>[] oldTab = table;
+        int oldCap = (oldTab == null) ? 0 : oldTab.length;
+        int oldThr = threshold;
+        int newCap, newThr = 0;
+        if (oldCap > 0) {
+            if (oldCap >= MAXIMUM_CAPACITY) {
+                threshold = Integer.MAX_VALUE;
+                return oldTab;
+            }
+            else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
+                     oldCap >= DEFAULT_INITIAL_CAPACITY)
+                newThr = oldThr << 1; // double threshold
+        }
+        else if (oldThr > 0) // initial capacity was placed in threshold
+            newCap = oldThr;
+        else {               // zero initial threshold signifies using defaults
+            newCap = DEFAULT_INITIAL_CAPACITY;
+            newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
+        }
+        if (newThr == 0) {
+            float ft = (float)newCap * loadFactor;
+            newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?
+                      (int)ft : Integer.MAX_VALUE);
+        }
+        threshold = newThr;
+        @SuppressWarnings({"rawtypes","unchecked"})
+        Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];
+        table = newTab;
+        if (oldTab != null) {
+            for (int j = 0; j < oldCap; ++j) {
+                Node<K,V> e;
+                if ((e = oldTab[j]) != null) {
+                    oldTab[j] = null;
+                    if (e.next == null)
+                        newTab[e.hash & (newCap - 1)] = e;
+                    else if (e instanceof TreeNode)
+                        ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
+                    else { // preserve order
+                        Node<K,V> loHead = null, loTail = null;
+                        Node<K,V> hiHead = null, hiTail = null;
+                        Node<K,V> next;
+                        do {
+                            next = e.next;
+                            if ((e.hash & oldCap) == 0) {
+                                if (loTail == null)
+                                    loHead = e;
+                                else
+                                    loTail.next = e;
+                                loTail = e;
+                            }
+                            else {
+                                if (hiTail == null)
+                                    hiHead = e;
+                                else
+                                    hiTail.next = e;
+                                hiTail = e;
+                            }
+                        } while ((e = next) != null);
+                        if (loTail != null) {
+                            loTail.next = null;
+                            newTab[j] = loHead;
+                        }
+                        if (hiTail != null) {
+                            hiTail.next = null;
+                            newTab[j + oldCap] = hiHead;
+                        }
+                    }
+                }
+            }
+        }
+        return newTab;
+    }
+// 树化
+final void treeifyBin(Node<K,V>[] tab, int hash) {
+        int n, index; Node<K,V> e;
+        if (tab == null || (n = tab.length) < MIN_TREEIFY_CAPACITY)
+            resize();
+        else if ((e = tab[index = (n - 1) & hash]) != null) {
+            TreeNode<K,V> hd = null, tl = null;
+            do {
+                TreeNode<K,V> p = replacementTreeNode(e, null);
+                if (tl == null)
+                    hd = p;
+                else {
+                    p.prev = tl;
+                    tl.next = p;
+                }
+                tl = p;
+            } while ((e = e.next) != null);
+            if ((tab[index] = hd) != null)
+                hd.treeify(tab);
+        }
+    }
+```
+
+### 小结
+
+#### Collections工具类
+
+1. Collection是一个操作Set、List和Map等集合的工具类
+2. Collection中提供了一系列静态的方法对集合元素进行排序、查询和修改等操作
+
+- 排序操作
+
+1. reverse（List）：反转List中元素的顺序
+2. shuffe（List）：对List集合元素进行随机排序
+3. sort（List）：根据元素的自然顺序对指定的List集合元素按升序排序
+4. sort（List，Commparator）：根据比较器产生的顺序对List集合元素进行排序
+5. swap（List，int，int）：交换List集合中两处元素位置
+
+- 查找、替换
+
+1. Object max（Collection）：根据元素的自然顺序，返回给定集合中的最大元素
+2. Objecet max（Collection，Comparator）：根据比较器指定的顺序返回给定集合中的最大元素
+3. Object（Collection[,Comparator]）类似
+4. int frequency（Collection，Object）：返回指定集合中指定元素出现的次数
+5. void copy（List dest ，List src）：将src中的内容复制到dest中
+6. boolean replaceAll(List list,Object oldVal ,Object newVal):使用新值替换List对象的所有旧值
+
+注意：==Collections！=Collection==
+
+java.util.Collections是一个包装类。为各种扩展了Collection接口的类或者接口提供算法操作。即一个算法的集合，而java.util.Collection是一个[集合](https://so.csdn.net/so/search?q=集合&spm=1001.2101.3001.7020)接口。它提供了对集合对象进行基本操作的通用方法
+
+
 
 ## 常用类
 
@@ -2562,9 +2785,11 @@ public class Properties_{
 
 ctrl+J 显示快捷输入
 
-alt+insert生成构造器
+alt+insert 生成构造器
 
-ctrl+alt+b查看子类和实现类
+ctrl+alt+b 查看子类和实现类
+
+ctrl+左键 查看源码
 
 ## 冒泡排序实现
 
