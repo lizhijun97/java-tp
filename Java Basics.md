@@ -2785,9 +2785,11 @@ public class Properties_{
 
 ctrl+J 显示快捷输入
 
-alt+insert生成构造器
+alt+insert 生成构造器
 
-ctrl+alt+b查看子类和实现类
+ctrl+alt+b 查看子类和实现类
+
+ctrl+左键 查看源码
 
 ## 冒泡排序实现
 
