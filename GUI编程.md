@@ -324,14 +324,526 @@ class MyMonitor implements ActionListener{
 }
 ```
 
+### 5.输入框TextField监听
 
+```java
+package com.cxx.gui;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+public class TestText01{
+    public static void main(String[] args) {
+        MyFrame1 myFrame1 = new MyFrame1();
+        myFrame1.winClose();
+    }
+}
+class MyFrame1 extends Frame{
+    public MyFrame1(){
+        TextField textField = new TextField();
+        add(textField);
+        // 监听文本框输入的文字
+        MyActionListener1 myActionListener1 = new MyActionListener1();
+        textField.addActionListener(myActionListener1);
+
+        // 设置输出显示
+        textField.setEchoChar('*');
+        setVisible(true);
+        pack();
+
+    }
+    public void winClose(){
+        addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+    }
+}
+
+class MyActionListener1 implements ActionListener{
+    @Override
+    public void actionPerformed(ActionEvent e){
+        // 获取一些资源
+        TextField field = (TextField) e.getSource();
+        System.out.println(field.getText()); //获取输入文本
+        field.setText("");//输出后重置输入栏
+    }
+}
+```
+
+### 6.简易计算器
+
+![image-20220726140543918](image/image-20220726140543918.png)
+
+```java
+package com.cxx.gui;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+// 简易加法计算器实现
+public class TestCalculator{
+    public static void main(String[] args) {
+        new Calculator();
+    }
+}
+
+// 计算器类
+class Calculator extends Frame{
+    public Calculator(){
+        // 组件：三个文本框、1按钮和1标签
+        TextField num1 = new TextField(10);
+        TextField num2 = new TextField(10);
+        TextField num3 = new TextField(12);
+        Button button = new Button("=");
+        Label label = new Label("+");
+
+        setLayout(new FlowLayout());
+        add(num1);
+        add(label);
+        add(num2);
+        add(button);
+        add(num3);
+
+        // 设置监听器
+        button.addActionListener(new MyCalculatorListener(num1,num2,num3));
+        pack();
+        setVisible(true);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+    }
+}
+
+class MyCalculatorListener implements ActionListener{
+    private TextField i,j,res;
+    public MyCalculatorListener(TextField i,TextField j,TextField k) {
+        this.i= i;
+        this.j= j;
+        this.res=k;
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // 获得加数和被加数
+        int n1 = Integer.parseInt(i.getText());
+        int n2 = Integer.parseInt(j.getText());
+        // 得到结果,清空输入栏
+        res.setText(""+(n1+n2));
+        i.setText("");
+        j.setText("");
+    }
+}
+```
+
+```java
+// 面向对象的写法
+// 使用内部类和组合的
+package com.cxx.gui;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+// 简易加法计算器实现
+public class TestCalculator{
+    public static void main(String[] args) {
+        new Calculator();
+    }
+}
+
+// 计算器类
+class Calculator extends Frame{
+    private TextField num1,num2,num3;
+    public Calculator(){
+        // 组件：三个文本框、1按钮和1标签
+        num1 = new TextField();
+        num2 = new TextField();
+        num3 = new TextField();
+        Button button = new Button("=");
+        Label label = new Label("+");
+
+        setLayout(new FlowLayout());
+        add(num1);
+        add(label);
+        add(num2);
+        add(button);
+        add(num3);
+
+        // 设置监听器
+        button.addActionListener(new MyCalculatorListener());
+        pack();
+        setVisible(true);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+    }
+    
+   	// 使用内部类，可以自由访问外部的属性和方法
+    private class MyCalculatorListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // 获得加数和被加数
+            int n1 = Integer.parseInt(num1.getText());
+            int n2 = Integer.parseInt(num2.getText());
+            // 得到结果,清空输入栏
+            num3.setText(""+(n1+n2));
+            num2.setText("");
+            num1.setText("");
+        }
+    }
+}
+```
+
+### 7.画笔
+
+```java
+package com.cxx.gui;
+
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+public class TestPaint {
+    public static void main(String[] args) {
+        MyPaint myPaint = new MyPaint();
+        myPaint.loadFrame();
+    }
+}
+
+class MyPaint extends Frame {
+    public void loadFrame(){
+        setBounds(200,200,600,600);
+        setVisible(true);
+		
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+    }
+	// 画笔
+    public void paint(Graphics graphics){
+        // 设置颜色和形状
+        graphics.setColor(Color.BLUE);
+        graphics.fillOval(50,50,50,50);
+        graphics.setColor(Color.GRAY);
+        graphics.fillRect(150,200,100,100);
+        // 画笔使用完，需要还原颜色
+    }
+}
+```
+
+### 8.鼠标监听
+
+```java
+package com.cxx.gui;
+
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.FileHandler;
+
+public class TestMouseListener {
+    public static void main(String[] args) {
+        new MyFrame2("鼠标监听");
+    }
+}
+
+class MyFrame2 extends Frame{
+    ArrayList points;
+    public MyFrame2(String title)  {
+        super(title);
+        // 设置画布
+        setBounds(200,200,500,500);
+        // 存放鼠标点击位置的点
+        points =new ArrayList<>();
+        // 鼠标监听器
+        this.addMouseListener(new MyMouseListener());
+        setVisible(true);
+    }
+
+    public void paint(Graphics g) {
+        // 画画，监听鼠标事件
+        Iterator iterator = points.iterator();
+        while (iterator.hasNext()){
+            Point next = (Point) iterator.next();
+            g.setColor(Color.BLACK);
+            g.fillOval(next.x,next.y,10,10);
+        }
+    }
+    // 适配器模式
+    private class MyMouseListener extends MouseAdapter{
+        @Override
+        public void mousePressed(MouseEvent e){
+            MyFrame2 frame =(MyFrame2) e.getSource();
+            // 绘制鼠标点击的点
+            frame.addPaint(getMousePosition());
+            // 每次点击要继续画
+            frame.repaint();
+        }
+    }
+	// 加点
+    private void addPaint(Point mousePosition) {
+        points.add(mousePosition);
+    }
+}
+```
+
+效果图
+
+<img src="image/image-20220727094330674.png" alt="image-20220727094330674" style="zoom:50%;" />
+
+### 9.窗口监听
+
+```java
+package com.cxx.gui;
+
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+public class TestWindow {
+    public static void main(String[] args) {
+        new windowFrame();
+
+    }
+}
+
+class windowFrame extends Frame{
+    public windowFrame(){
+        setBounds(100,100,300,300);
+        setBackground(Color.CYAN);
+        setVisible(true);
+//        addWindowListener(new MyWindowListener());
+        // 采用匿名内部类
+        this.addWindowListener(new WindowAdapter() {
+            // 关闭
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.out.println("关闭弹窗");
+                System.exit(0);
+            }
+            // 激活（最小化到显示）
+            @Override
+            public void windowActivated(WindowEvent e) {
+                System.out.println("激活弹窗");
+            }
+        });
+    }
+
+//    class MyWindowListener extends WindowAdapter{
+//        @Override
+//        public void windowClosing(WindowEvent e) {
+//            setVisible(false);
+//            System.exit(0);
+//        }
+//    }
+}
+```
+
+### 10.键盘监听
+
+```java
+package com.cxx.gui;
+
+import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+public class TestKeyListener {
+    public static void main(String[] args) {
+        new KeyFrame();
+
+    }
+}
+
+class KeyFrame extends Frame{
+    public KeyFrame(){
+        setBounds(100,100,300,300);
+        setVisible(true);
+        this.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                super.keyTyped(e);
+            }
+            // 键盘按下
+            @Override
+            public void keyPressed(KeyEvent e) {
+                // 获取按键信息
+                super.keyPressed(e);
+                System.out.print("按键"+e.getKeyChar()+"\t");
+            }
+            // 松开按键
+            @Override
+            public void keyReleased(KeyEvent e) {
+                super.keyReleased(e);
+                System.out.println("code="+e.getKeyCode());
+            }
+        });
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                setVisible(false);
+                System.exit(0);
+            }
+        });
+    }
+}
+```
 
 ## 3、Swing
+
+### 1.窗口、面板JFrame
+
+```java
+package com.cxx.gui;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class JFrameDemo {
+    public static void main(String[] args) {
+        new MyJFrame().init();
+    }
+}
+
+class MyJFrame extends JFrame{
+    public void init(){
+        this.setBounds(100,100,400,400);
+        this.setVisible(true);
+
+        JLabel label = new JLabel("welcome to JFrame");
+        // 设置居中
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        this.add(label);
+
+        // 获取一个容器
+        Container container = this.getContentPane();
+        container.setBackground(Color.white);
+        // 不同于Frame，使用容器退出
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
+}
+```
+
+### 2.弹窗
+
+```java
+package com.cxx.gui;
+
+import javax.swing.*;
+import java.awt.*;
+
+
+public class DialogDemo extends JFrame {
+    public static void main(String[] args) {
+        new DialogDemo();
+    }
+    public DialogDemo(){
+        this.setVisible(true);
+        this.setSize(  500,500);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        // 放容器
+        Container container = this.getContentPane();
+        // 绝对布局
+        container.setLayout(null);
+        // 按钮
+        JButton jB = new JButton("弹出对话框");
+        jB.setBounds(20,20,100,100);
+        // 点击弹出一个弹窗
+        jB.addActionListener(e -> new MyDialogDemo());
+        this.add(jB);
+    }
+}
+
+class MyDialogDemo extends JDialog{
+    public MyDialogDemo(){
+        this.setVisible(true);
+        this.setSize(  200,100);
+        // 弹窗默认有退出，所以下列代码重复
+        // this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        Container container = this.getContentPane();
+        container.setLayout(null);
+        container.add(new Label("hello"));
+    }
+}
+```
+
+### 3.标签
+
+```java
+package com.cxx.gui;
+
+import javax.swing.*;
+import java.awt.*;
+import java.net.URL;
+
+public class ImageIconDemo extends JFrame {
+    public ImageIconDemo() {
+        // 图片路径待定
+        JLabel label = new JLabel("ImageIcon");
+        URL url = ImageIconDemo.class.getResource("");
+
+        ImageIcon imageIcon = new ImageIcon(url);
+        label.setIcon(imageIcon);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+
+        Container container = getContentPane();
+        container.add(label);
+
+        setVisible(true);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setBounds(100,100,400,400);
+    }
+
+    public static void main(String[] args) {
+        new ImageIconDemo();
+    }
+}
+```
+
+### 4.面板
+
+
+
+### 5.按钮
+
+### 6.列表
+
+### 7.文本框
+
+## 4.贪吃蛇绘制
 
 
 
 ## 附录
 
-1.idea快捷键
+### 1.idea快捷键
 
 ctrl+/ 多行注释
