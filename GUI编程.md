@@ -830,11 +830,147 @@ public class ImageIconDemo extends JFrame {
 
 ### 4.面板
 
+#### JPanel
 
+```java
+package com.cxx.gui;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class JPanelDemo extends JFrame {
+    public static void main(String[] args) {
+        new JPanelDemo();
+    }
+    public JPanelDemo(){
+        Container container = this.getContentPane();
+        // 增加的参数为间距
+        container.setLayout(new GridLayout(2,1,10,10));
+
+        JPanel panel1 = new JPanel(new GridLayout(1,2));
+        panel1.add(new JButton("1"));
+        panel1.add(new JButton("2"));
+
+        container.add(panel1);
+
+        this.setVisible(true);
+        this.setSize(200,200);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
+}
+
+```
+
+#### JScroll(滚动)
+
+```java
+package com.cxx.gui;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class JScrollDemo extends JFrame {
+    public JScrollDemo(){
+        Container container = this.getContentPane();
+        // 文本域
+        JTextArea textArea = new JTextArea(20,50);
+        textArea.setText("你好");
+        // Scroll面板
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        container.add(scrollPane);
+
+        this.setVisible(true);
+        this.setBounds(100,100,300,400);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
+
+    public static void main(String[] args) {
+        new JScrollDemo();
+    }
+}
+
+```
 
 ### 5.按钮
 
+-  普通按钮
+
+  ![image-20220727154150254](image/image-20220727154150254.png)
+
+- 单选按钮
+
+  单选框只能从一组选项中选取一个，因此需要先对选项分组     
+
+  ![image-20220727154446850](image/image-20220727154446850.png)
+
+- 多选框
+
+  ```java
+  package com.cxx.gui;
+  
+  import javax.swing.*;
+  import java.awt.*;
+  import java.net.URL;
+  
+  public class JButtonDemo extends JFrame {
+      public JButtonDemo(){
+          Container container = this.getContentPane();
+          URL resource = JScrollDemo.class.getResource("路径");
+          Icon icon = new ImageIcon(resource);
+          //多选框
+          JCheckBox checkBox1 = new JCheckBox("选项1");
+          JCheckBox checkBox2 = new JCheckBox("选项2");
+          container.add(checkBox1,BorderLayout.NORTH);
+          container.add(checkBox2,BorderLayout.SOUTH);
+  
+          this.setVisible(true);
+          this.setSize(400,400);
+          this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+      }
+      public static void main(String[] args) {
+          new JButtonDemo();
+      }
+  }
+  ```
+
 ### 6.列表
+
+- 下拉框
+
+  ```java
+  import javax.swing.*;
+  import java.awt.*;
+  
+  public class TestComboboxDemo01 extends JFrame {
+      public static void main(String[] args) {
+          new TestComboboxDemo01();
+      }
+      public TestComboboxDemo01(){
+          Container container = this.getContentPane();
+          JComboBox status = new JComboBox();
+          status.setToolTipText("请选择：");
+          status.addItem(null);
+          status.addItem("choice1");
+          status.addItem("choice2");
+          status.addItem("choice3");
+  
+          container.add(status);
+  
+          this.setVisible(true);
+          this.setSize(300,300);
+          this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+      }
+  }
+  
+  ```
+
+- 列表框
+
+  ```
+  
+  ```
+
+  
 
 ### 7.文本框
 
