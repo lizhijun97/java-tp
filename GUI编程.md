@@ -976,7 +976,116 @@ public class JScrollDemo extends JFrame {
 
 ## 4.贪吃蛇绘制
 
+1.游戏主启动类
 
+```java
+package snake;
+import javax.swing.*;
+
+// 游戏主启动类
+public class StartGame{
+	psvm{
+		JFrame frame = new JFrame;
+		frame.setBounds(10,10,900,700);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(WindowConstarts.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
+}
+```
+
+2.游戏面板
+
+```java
+package snake;
+import javax.swing.*;
+import java.awt.*;
+
+// 游戏面板
+public class GamePanel extends JPanel{
+	// 定义蛇的数据结构
+    int length;
+    //snakeX和Y分别代表蛇的某节对应的x，y坐标。注意：蛇的坐标个数与界面单位块相关，此处为25*25，理论最多625节
+    int[] snakeX = new int[600]; 
+    int[] snakeY = new int[500];
+    String direction = "R";
+    // 游戏状态，初始化为停止
+    Boolean isStart = false;
+    
+    
+    public GamePanel{
+        init();
+        
+    }
+    
+    // 初始化方法
+    public void init(){
+        length =3;
+        snakeX[0]=100;snakeY[0]=100; // 蛇的头部
+        snakeX[1]=75;sankeY[1]=100; // 蛇的第二节
+        snakeX[2]=50;sankeY[2]=100; // ...
+    }
+    
+    // 绘制面板，游戏所有实现都是画笔绘制
+    @override 
+	protected void paintCompoent(Graphics g){
+		super.paintComponent(g);// 清屏
+        // 绘制静态面板
+        Data.header.paintIcon(this.g,25,11)// 画上广告栏
+        g.fillRect(25,75,850,600) // 默认的游戏界面
+        this.setBackgroud(Color.BLACK);
+        // 绘制小蛇
+        // 头部，初始为右
+        switch(direction){
+            case "L":
+Data.left.paintIcon(this.g,snakeX[0],snakeY[0]);
+            case "R":               Data.right.paintIcon(this.g,snakeX[0],snakeY[0]);
+            case "U":
+Data.up.paintIcon(this.g,snakeX[0],snakeY[0]);
+            case "D":               Data.down.paintIcon(this.g,snakeX[0],snakeY[0]);
+            default:
+                break;
+        }
+        for(int i=1; i<length; i++){
+            // 身体
+            Data.body.paintIcon(this.g,snake[i],snake[i]);
+        }
+        if(isStart == false){
+            g.setColor(Color.white);
+            g.setFont(new Font("微软雅黑",Font.BOLD,40));
+            g.drawString("按空格开始游戏"，300,250);
+        }
+	}
+}
+```
+
+3.数据类
+
+```java
+package snake;
+
+// 数据中心
+public class Data{
+	// 头部广告图标
+	private static  URL headerURL = Data.class.getResource("filepath");
+	public static ImageIcon header = new ImageIcon(headerURL);
+	// 上下左右类似
+	private static  URL upURL = Data.class.getResource("filepath1");
+	public static ImageIcon header = new ImageIcon(upURL);
+    private static  URL downURL = Data.class.getResource("filepath2");
+	public static ImageIcon down = new ImageIcon(downURL);
+	private static  URL leftURL = Data.class.getResource("filepath3");
+	public static ImageIcon left = new ImageIcon(leftURL);
+	private static  URL rightURL = Data.class.getResource("filepath4");
+	public static ImageIcon right = new ImageIcon(rightURL);
+    // 身体和食物
+    private static  URL bodyURL = Data.class.getResource("filepath5");
+	public static ImageIcon body = new ImageIcon(bodyURL);
+    private static  URL foodURL = Data.class.getResource("filepath6");
+	public static ImageIcon food = new ImageIcon(foodURL);
+}
+
+```
 
 ## 附录
 
