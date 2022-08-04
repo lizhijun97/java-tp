@@ -1075,22 +1075,34 @@ public class StartGame{
 package snake;
 import javax.swing.*;
 import java.awt.*;
-
+import java.event.ActionListener;
+import java.event.KeyEvent;
+import java.event.KeyListener;
 // 游戏面板
-public class GamePanel extends JPanel{
+public class GamePanel extends JPanel implements KeyListener,ActionListener{
 	// 定义蛇的数据结构
     int length;
     //snakeX和Y分别代表蛇的某节对应的x，y坐标。注意：蛇的坐标个数与界面单位块相关，此处为25*25，理论最多625节
     int[] snakeX = new int[600]; 
-    int[] snakeY = new int[500];
+    int[] snakeY = new int[600];
     String direction = "R";
+    
+    // 食物的坐标
+    Random rd = new Random();
+    int foodX,foodY;
+    
     // 游戏状态，初始化为停止
     Boolean isStart = false;
     
+    // 定时器
+    Timer timer = new Timer(200,this)// 200ms执行一次
     
     public GamePanel{
         init();
-        
+        // 获取焦点和键盘事件
+        this.setFocusable(true);// 获得焦点事件
+        this.addKeyListener(this);// 获得
+        timer.start();// 启动游戏就开启计时器
     }
     
     // 初始化方法
@@ -1099,6 +1111,9 @@ public class GamePanel extends JPanel{
         snakeX[0]=100;snakeY[0]=100; // 蛇的头部
         snakeX[1]=75;sankeY[1]=100; // 蛇的第二节
         snakeX[2]=50;sankeY[2]=100; // ...
+        
+        foodX = 25+25*rd.nextInt(33);
+        foodY = 25+25*rd.nextInt(24);
     }
     
     // 绘制面板，游戏所有实现都是画笔绘制
@@ -1125,12 +1140,71 @@ Data.up.paintIcon(this.g,snakeX[0],snakeY[0]);
             // 身体
             Data.body.paintIcon(this.g,snake[i],snake[i]);
         }
+        // 游戏状态
         if(isStart == false){
             g.setColor(Color.white);
             g.setFont(new Font("微软雅黑",Font.BOLD,40));
             g.drawString("按空格开始游戏"，300,250);
         }
-	}
+        // 画食物
+       Data.food.paintIcon(this.g,foodX,foodY);	
+    }
+    // 键盘监听事件
+    @Override
+    public void keyPressed(KeyEvent e){
+        int keyCode = e.getKeyCode();
+        if(keyCode == KeyEvent.VK_SPACE){
+            isStart =!isStart;// 取反，空格可以启停
+            repaint();
+        }
+        // 小蛇移动
+        if(keyCode==KeyEvent.VK_DOWN){
+            direction = "D";
+        }else if(keyCode==KeyEvent.VK_LEFT){
+            direction = "L";
+        }else if(keyCode==KeyEvent.VK_RIGHT){
+            direction = "R";
+        }else if(keyCode==KeyEvent.VK_UP){
+            direction = "U";
+        }
+    }
+    // 事件监听---通过固定事件刷新游戏界面
+    public void actionPerformed(ActionEvent e){
+        if(isStart){ //游戏是开启状态
+            // 移动
+            // 先动尾后头
+            for(int i = length-1;i>0;i--){
+                snakeX[i] = snakeX[i-1];
+                snakeY[i] = snakeY[i-1];
+            }
+            // 走向和边界判断
+            if(direction.equals('R')){snakeX[0]=snakeX[0]+25;if(snakeX[0]>850){
+            	snakeX[0] = 25;
+        	}}
+            else if(direction.equals('U')){snakeY[0]=snakeY[0]-25;if(snakeY[0]<25){
+            	snakeY[0] = 600;
+        	}}
+            else if(direction.equals('D')){snakeY[0]=snakeY[0]+25;if(snakeY[0]>600){
+            	snakeY[0] = 25;
+        	}}
+            else if(direction.equals('L')){snakeX[0]=snakeX[0]-25;if(snakeX[0]<0){
+            	snakeX[0] = 850;
+        	}}
+            
+            // 吃食物
+            if (snakeX[0] == foodX && snakeY[0] == foodY){
+                length++;
+                // 再次随机食物位置
+                foodX = 25+25*rd.nextInt(33);
+        		foodY = 25+25*rd.nextInt(24);
+            }
+        }
+    }
+    
+    @Override
+    public void keyReleased(KeyEvent e){}
+    @Override
+    public void keyTyped(KeyEvent e){}
 }
 ```
 
@@ -1162,7 +1236,7 @@ public class Data{
 
 ```
 
-## 
+
 
 ## 附录
 
