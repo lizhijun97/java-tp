@@ -974,6 +974,81 @@ public class JScrollDemo extends JFrame {
 
 ### 7.文本框
 
+- 文本框
+
+  ```java
+  public TestDemo01 extends JFrame{
+      public TestDemo01(){
+          Container container = this.getContentPane();
+          JTextField textField1 = new JTextField("hello");
+          JTextField textField2 = new JTextField("world",20);
+          container.add(textField1,BorderLayout.NORTH);
+          container.add(textField2,BorderLayout.SOUTH);
+          this.setVisible(true);
+          this.setSize(500,350);
+    this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+      }
+      Public static void main(String[] arg){
+          new TestDemo01();
+      }
+  }
+  ```
+
+  
+
+- 密码域
+
+  ```java
+  public TestDemo01 extends JFrame{
+      public TestDemo02(){
+          Container container = this.getContentPane();
+          JPasswordField pw = new JPasswordField();
+          pw.setEchoChar('*');
+          container.add(pw)
+          this.setVisible(true);
+          this.setSize(500,350);
+    this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+      }
+      Public static void main(String[] arg){
+          new TestDemo02();
+      }
+  }
+  ```
+
+  
+
+- 文本域
+
+  ```java
+  package com.cxx.gui;
+  
+  import javax.swing.*;
+  import java.awt.*;
+  
+  public class JScrollDemo extends JFrame {
+      public JScrollDemo(){
+          Container container = this.getContentPane();
+          // 文本域
+          JTextArea textArea = new JTextArea(20,50);
+          textArea.setText("你好");
+          // Scroll面板
+          JScrollPane scrollPane = new JScrollPane(textArea);
+          container.add(scrollPane);
+  
+          this.setVisible(true);
+          this.setBounds(100,100,300,400);
+          this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+      }
+  
+      public static void main(String[] args) {
+          new JScrollDemo();
+      }
+  }
+  
+  ```
+
+  
+
 ## 4.贪吃蛇绘制
 
 1.游戏主启动类
@@ -1086,6 +1161,8 @@ public class Data{
 }
 
 ```
+
+## 
 
 ## 附录
 
