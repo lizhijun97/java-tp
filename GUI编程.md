@@ -1093,6 +1093,7 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
     
     // 游戏状态，初始化为停止
     Boolean isStart = false;
+    Boolean isFail = false;
     
     // 定时器
     Timer timer = new Timer(200,this)// 200ms执行一次
@@ -1124,6 +1125,8 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
         Data.header.paintIcon(this.g,25,11)// 画上广告栏
         g.fillRect(25,75,850,600) // 默认的游戏界面
         this.setBackgroud(Color.BLACK);
+        // 画食物
+       Data.food.paintIcon(this.g,foodX,foodY);	
         // 绘制小蛇
         // 头部，初始为右
         switch(direction){
@@ -1141,20 +1144,31 @@ Data.up.paintIcon(this.g,snakeX[0],snakeY[0]);
             Data.body.paintIcon(this.g,snake[i],snake[i]);
         }
         // 游戏状态
+        // 开始判定
         if(isStart == false){
             g.setColor(Color.white);
             g.setFont(new Font("微软雅黑",Font.BOLD,40));
             g.drawString("按空格开始游戏"，300,250);
         }
-        // 画食物
-       Data.food.paintIcon(this.g,foodX,foodY);	
+        // 失败判定
+        if(isFail){
+            g.setColor(Color.RED);
+            g.setFont(new Font("微软雅黑",Font.BOLD,40));
+            g.drawString("游戏失败，按空格重新开始"，300,250);
+        }
+        
+
     }
     // 键盘监听事件
     @Override
     public void keyPressed(KeyEvent e){
         int keyCode = e.getKeyCode();
         if(keyCode == KeyEvent.VK_SPACE){
-            isStart =!isStart;// 取反，空格可以启停
+            if(isFail){
+                
+            }else{ 
+                isStart =!isStart;// 取反，空格可以启停
+            }
             repaint();
         }
         // 小蛇移动
@@ -1170,7 +1184,14 @@ Data.up.paintIcon(this.g,snakeX[0],snakeY[0]);
     }
     // 事件监听---通过固定事件刷新游戏界面
     public void actionPerformed(ActionEvent e){
-        if(isStart){ //游戏是开启状态
+        if(isStart&&isFail == false){ //游戏是开启状态
+            // 吃食物
+            if (snakeX[0] == foodX && snakeY[0] == foodY){
+                length++;
+                // 再次随机食物位置
+                foodX = 25+25*rd.nextInt(33);
+        		foodY = 25+25*rd.nextInt(24);
+            }
             // 移动
             // 先动尾后头
             for(int i = length-1;i>0;i--){
@@ -1191,14 +1212,17 @@ Data.up.paintIcon(this.g,snakeX[0],snakeY[0]);
             	snakeX[0] = 850;
         	}}
             
-            // 吃食物
-            if (snakeX[0] == foodX && snakeY[0] == foodY){
-                length++;
-                // 再次随机食物位置
-                foodX = 25+25*rd.nextInt(33);
-        		foodY = 25+25*rd.nextInt(24);
+            
+            // 失败判定
+            for(int i= 1;i<length;i++){
+                if(snakeX[0]==snakeX[i]&&snakeY[0]==snakeY[i];){
+                    isFail = true;
+                }
             }
+            // 更新画面
+            repaint();
         }
+        timer.start();
     }
     
     @Override
